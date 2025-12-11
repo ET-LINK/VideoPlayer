@@ -211,7 +211,7 @@ extension VideoPlayer: UIViewRepresentable {
         uiView.speedRate = config.speedRate
         
         if let observerTime = context.coordinator.observerTime, time != observerTime {
-            uiView.seek(to: time, toleranceBefore: time, toleranceAfter: time, completion: { _ in })
+            uiView.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completion: { _ in })
         }
     }
     
@@ -233,20 +233,20 @@ extension VideoPlayer: UIViewRepresentable {
         
         func startObserver(uiView: VideoPlayerView) {
             guard observer == nil else { return }
-            
+
             if !hasLoaded {
                 hasLoaded = true
-                
+
                 let startTime = videoPlayer.time
-                uiView.seek(to: startTime, toleranceBefore: startTime, toleranceAfter: startTime) { _ in }
+                uiView.seek(to: startTime, toleranceBefore: .zero, toleranceAfter: .zero) { _ in }
             }
-            
-            observer = uiView.addPeriodicTimeObserver(forInterval: .init(seconds: 0.25, preferredTimescale: 60)) { [weak self, unowned uiView] time in
+
+            observer = uiView.addPeriodicTimeObserver(forInterval: .init(seconds: 0.033, preferredTimescale: 600)) { [weak self, unowned uiView] time in
                 guard let `self` = self else { return }
-                
+
                 self.videoPlayer.time = time
                 self.observerTime = time
-                
+
                 self.updateBuffer(uiView: uiView)
             }
         }
